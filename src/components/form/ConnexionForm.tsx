@@ -19,25 +19,31 @@ const ConnexionForm: React.FC<ConnexionFormProps> = ({ onSubmit, error }) => {
         sqlInjection?: string;
     }>({});
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [forgotEmail, setForgotEmail] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const formValues = { email, password };
-        const validationErrors = validateConnexionForm(formValues); // Renommé en fonction spécifique
+        const validationErrors = validateConnexionForm(formValues);
 
         if (Object.keys(validationErrors).length === 0) {
-            // Si pas d'erreurs, soumettre le formulaire
             setIsSubmitting(true);
             try {
                 await onSubmit(email, password);
             } finally {
-                setIsSubmitting(false); // Remettre à false après la soumission
+                setIsSubmitting(false);
             }
         } else {
-            // Si erreurs, les afficher
             setErrors(validationErrors);
         }
+    };
+
+    const handleForgotPasswordSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Action pour la récupération de mot de passe via forgotEmail
+        setIsModalOpen(false);
     };
 
     return (
@@ -104,10 +110,31 @@ const ConnexionForm: React.FC<ConnexionFormProps> = ({ onSubmit, error }) => {
                 {error && (
                     <div className="text-red-500 mb-4">{error.message}</div>
                 )}
+
                 <div className="text-xs font-thin mb-6">
                     (*) Champs obligatoires
                 </div>
+
+                <div className="flex flex-col mb-4">
+                    <span
+                        className="text-white underline cursor-pointer"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Mot de passe oublié ?
+                    </span>
+                </div>
+
                 <div className="w-full flex flex-row justify-between">
+                    
+                    {!isSubmitting && (
+                        <NavLink
+                            to={`/inscription`}
+                            rel="s'inscrire"
+                            className="rounded-lg bg-[#2c3540b5] px-4 py-2 hover:bg-[#2c35405a]"
+                        >
+                            S'inscrire
+                        </NavLink>
+                    )}
                     <button
                         className="rounded-lg bg-[#2c3540b5] px-4 py-2 hover:bg-[#2c35405a]"
                         type="submit"
@@ -118,23 +145,64 @@ const ConnexionForm: React.FC<ConnexionFormProps> = ({ onSubmit, error }) => {
                                 <ButtonLoader />
                                 <span className="ml-2">
                                     Connexion en cours...
-                                </span>{" "}
+                                </span>
                             </div>
                         ) : (
                             "Se connecter"
                         )}
                     </button>
-                    {!isSubmitting && (
-                        <NavLink
-                            to={`/inscription`}
-                            rel="s'inscrire"
-                            className="rounded-lg bg-[#2c3540b5] px-4 py-2 hover:bg-[#2c35405a]"
-                        >
-                            S'inscrire
-                        </NavLink>
-                    )}
                 </div>
             </form>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-[#2c3540b5] rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 relative">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold">
+                                Récupérer votre mot de passe
+                            </h2>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-white text-xl"
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <form onSubmit={handleForgotPasswordSubmit}>
+                            <div className="flex flex-col mb-4">
+                                <label htmlFor="forgotEmail" className="mb-2">
+                                    Adresse email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="forgotEmail"
+                                    className="rounded-lg bg-[#2c3540b5] px-4 py-2"
+                                    value={forgotEmail}
+                                    onChange={(e) =>
+                                        setForgotEmail(e.target.value)
+                                    }
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-between ">
+                                <button
+                                    className="rounded-lg bg-gray-400 px-4 py-2 hover:bg-gray-500"
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    className="rounded-lg bg-[#2c3540b5] px-4 py-2 hover:bg-[#2c35405a]"
+                                    type="submit"
+                                >
+                                    Valider
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
