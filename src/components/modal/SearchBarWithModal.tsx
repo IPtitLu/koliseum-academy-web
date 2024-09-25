@@ -76,7 +76,14 @@ const SearchBarWithModal: React.FC<SearchBarWithModalProps> = ({
     useEffect(() => {
         if (initialFilters) {
             setCoachName(initialFilters.coachName || "");
-            setSearchDate(initialFilters.minDate || "");
+            if (initialFilters.minDate) {
+                const formattedDate = new Date(initialFilters.minDate)
+                    .toISOString()
+                    .slice(0, 10); // Formatte la date en YYYY-MM-DD
+                setSearchDate(formattedDate);
+            } else {
+                setSearchDate("");
+            }
             setSelectedSports(
                 sportOptions.filter((option) =>
                     initialFilters.sports?.includes(option.value)
@@ -142,11 +149,22 @@ const SearchBarWithModal: React.FC<SearchBarWithModalProps> = ({
     const handleSubmit = () => {
         const sportIds = selectedSports.map((sport) => sport.value);
         const levelKeys = levels.map((level) => level);
+        let minDate = searchDate ? new Date(searchDate) : null;
+        let maxDate = searchDate ? new Date(searchDate) : null;
+
+        if (minDate) {
+            minDate.setHours(0, 1, 0, 0); // Régler à 00h01
+        }
+
+        if (maxDate) {
+            maxDate.setHours(23, 59, 59, 999); // Régler à 23h59:59
+        }
+
         const filters = {
             coachName,
             sports: sportIds,
-            minDate: searchDate ? new Date(searchDate) : null,
-            maxDate: searchDate ? new Date(searchDate) : null,
+            minDate,
+            maxDate,
             minPlaces,
             maxPlaces,
             levels: levelKeys,
@@ -177,12 +195,12 @@ const SearchBarWithModal: React.FC<SearchBarWithModalProps> = ({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <div className="relative w-full max-w-md mt-2 mb-6">
+        <div className="relative w-full max-w-md mt-2">
             <button
                 onClick={handleOpenModal}
                 className="rounded-lg bg-[#2c3540b5] px-4 py-2 w-full flex items-center justify-between"
             >
-                <span>Rechercher</span>
+                <span>Recherche avancée</span>
                 <FaSearch />
             </button>
 

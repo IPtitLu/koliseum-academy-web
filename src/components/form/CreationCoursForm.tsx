@@ -44,6 +44,8 @@ const CreationCoursForm: React.FC = () => {
         sqlInjection?: string;
     }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dateDebutError, setDateDebutError] = useState("");
+    const [dateFinError, setDateFinError] = useState("");
 
     const { createCourse, error } = useApiCourse();
 
@@ -109,6 +111,22 @@ const CreationCoursForm: React.FC = () => {
     };
 
     const today = new Date().toISOString().split("T")[0];
+
+    const getCurrentDateTime = () => {
+        const now = new Date();
+
+        return now
+            .toLocaleString("sv-SE", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            })
+            .replace(" ", "T")
+            .slice(0, 16);
+    };
 
     return (
         <div className="w-full flex flex-col">
@@ -280,11 +298,35 @@ const CreationCoursForm: React.FC = () => {
                         Date de début *
                     </label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         id="dateDebut"
                         value={dateDebut}
                         className="rounded-lg bg-[#2c3540b5] px-4 py-2 text-white"
-                        onChange={(e) => setDateDebut(e.target.value)}
+                        onChange={(e) => {
+                            const selectedDateDebut = e.target.value;
+                            const currentDateTime = getCurrentDateTime();
+
+                            console.log(currentDateTime);
+
+                            if (selectedDateDebut < currentDateTime) {
+                                setDateDebut("");
+                                setDateDebutError(
+                                    "La date de début ne peut pas être antérieure à l'heure actuelle."
+                                );
+                            } else {
+                                setDateDebutError("");
+                                setDateDebut(selectedDateDebut);
+                            }
+
+                            if (dateFin && e.target.value > dateFin) {
+                                setDateFin("");
+                                setDateFinError(
+                                    "La date de fin ne peut pas être antérieure à la date de début."
+                                );
+                            } else {
+                                setDateFinError("");
+                            }
+                        }}
                         required
                         disabled={isSubmitting}
                         min={today}
@@ -294,24 +336,45 @@ const CreationCoursForm: React.FC = () => {
                             {errors.dateDebut}
                         </span>
                     )}
+                    {dateDebutError && (
+                        <span className="text-red-500 mt-2">
+                            {dateDebutError}
+                        </span>
+                    )}
                 </div>
                 <div className="flex flex-col mb-4">
                     <label htmlFor="dateFin" className="mb-4">
                         Date de fin *
                     </label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         id="dateFin"
                         value={dateFin}
                         className="rounded-lg bg-[#2c3540b5] px-4 py-2 text-white"
-                        onChange={(e) => setDateFin(e.target.value)}
+                        onChange={(e) => {
+                            setDateFin(e.target.value);
+                            if (dateDebut && e.target.value < dateDebut) {
+                                setDateFin(""); // Reset dateFin si elle devient invalide
+                                setDateFinError(
+                                    "La date de fin ne peut pas être antérieure à la date de début."
+                                );
+                            } else {
+                                setDateFin(e.target.value);
+                                setDateFinError("");
+                            }
+                        }}
                         required
                         disabled={isSubmitting}
-                        min={today}
+                        min={dateDebut}
                     />{" "}
                     {errors.dateFin && (
                         <span className="text-red-500 mt-2">
                             {errors.dateFin}
+                        </span>
+                    )}
+                    {dateFinError && (
+                        <span className="text-red-500 mt-2">
+                            {dateFinError}
                         </span>
                     )}
                 </div>

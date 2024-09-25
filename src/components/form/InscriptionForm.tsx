@@ -18,6 +18,7 @@ interface InscriptionFormProps {
 const InscriptionForm: React.FC<InscriptionFormProps> = ({ onSubmit }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +27,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ onSubmit }) => {
     const [errors, setErrors] = useState<{
         email?: string;
         password?: string;
+        confirmPassword?: string;
         firstName?: string;
         lastName?: string;
         sqlInjection?: string;
@@ -59,6 +61,14 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ onSubmit }) => {
 
         if (uploading) {
             alert("Veuillez attendre la fin du téléchargement des documents.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                confirmPassword: "Les mots de passe ne correspondent pas.",
+            }));
             return;
         }
 
@@ -181,6 +191,27 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ onSubmit }) => {
                     {errors.password && (
                         <span className="text-red-500 mt-2">
                             {errors.password}
+                        </span>
+                    )}
+                </div>
+                <div className="flex flex-col mb-4">
+                    <label htmlFor="confirmPassword" className="mb-2">
+                        Confirmer le mot de passe *
+                    </label>
+                    <div className="flex relative">
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            className="rounded-lg bg-[#2c3540b5] px-4 py-2 w-full"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            disabled={isSubmitting || uploading}
+                        />
+                    </div>
+                    {errors.confirmPassword && (
+                        <span className="text-red-500 mt-2">
+                            {errors.confirmPassword}
                         </span>
                     )}
                 </div>

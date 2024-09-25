@@ -71,7 +71,7 @@ const CardMyCours: React.FC<CardCoursProps> = ({
                 ""
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm w-full">
-                <div className="flex items-center">
+                <div className="col-span-2 flex items-center">
                     <FaLocationDot className="mr-2" />
                     {position}
                 </div>
@@ -87,7 +87,7 @@ const CardMyCours: React.FC<CardCoursProps> = ({
                     <FaCertificate className="mr-2" />
                     niveau {level[0]}
                 </div>
-                <div className="col-span-2 flex items-center">
+                <div className="flex items-center">
                     <FaUsers className="mr-2" />
                     {places - remainingPlaces} participants
                 </div>

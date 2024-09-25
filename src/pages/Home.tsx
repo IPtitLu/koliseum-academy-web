@@ -8,6 +8,7 @@ import { Course } from "../utils/types/types";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../utils/atom/userAtom";
 import LandingPage from "./LandingPage";
+import sportDetail from "../data/sports.json";
 
 interface SearchFilters {
     coachName: string | null;
@@ -77,10 +78,6 @@ const Home: React.FC = () => {
         setShowAllCours(!showAllCours);
     };
 
-    // const toggleShowAllCoachs = () => {
-    //     setShowAllCoachs(!showAllCoachs);
-    // };
-
     const parseDate = (dateString: string | null): Date | null => {
         return dateString ? new Date(dateString) : null;
     };
@@ -127,6 +124,42 @@ const Home: React.FC = () => {
         }
     };
 
+    const formatFilters = () => {
+        const filters = [];
+
+        if (searchFilters.coachName) filters.push(`${searchFilters.coachName}`);
+        if (searchFilters.locations && searchFilters.locations.length > 0) {
+            filters.push(`${searchFilters.locations.join(", ")}`);
+        }
+        if (searchFilters.sports && searchFilters.sports.length > 0) {
+            // Récupérer les labels des sports à partir des IDs
+            const sportLabels = searchFilters.sports
+                .map((id) => {
+                    const sport = sportDetail.find((sport) => sport.id === id);
+                    return sport ? sport.label : null; // Récupère le label ou retourne null si non trouvé
+                })
+                .filter((label) => label !== null); // Filtrer les sports non trouvés
+
+            if (sportLabels.length > 0) {
+                filters.push(`${sportLabels.join(", ")}`);
+            }
+        }
+        if (searchFilters.minDate) {
+            filters.push(`${searchFilters.minDate.toLocaleDateString()}`);
+        }
+        if (searchFilters.minPlaces)
+            filters.push(`Places min: ${searchFilters.minPlaces}`);
+        if (searchFilters.maxPlaces)
+            filters.push(`Places max: ${searchFilters.maxPlaces}`);
+        if (searchFilters.levels && searchFilters.levels.length > 0) {
+            filters.push(`${searchFilters.levels.join(", ")}`);
+        }
+
+        return filters;
+    };
+
+    const activeFilters = formatFilters();
+
     if (!user && !localStorage.getItem("token")) return <LandingPage />;
     if (!user && localStorage.getItem("token")) return <Loader />;
 
@@ -139,6 +172,16 @@ const Home: React.FC = () => {
                         initialFilters={searchFilters}
                         onClear={handleClearFilters}
                     />
+
+                    {activeFilters.length > 0 && (
+                        <div className="w-full flex flex-wrap gap-2 text-sm mt-4">
+                            {activeFilters.map((filter, index) => (
+                                <span key={index} className="underline">
+                                    {filter}
+                                </span>
+                            ))}
+                        </div>
+                    )}
 
                     <h2 className="w-full text-left font-light pb-2 mb-6 mt-4 border-b-[0.5px]">
                         Cours disponibles

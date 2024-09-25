@@ -99,11 +99,11 @@ const CardCoursDetail: React.FC<CardCoursDetailProps> = ({
                 ""
             )}
             <div className="w-full flex flex-row flex-wrap justify-between text-sm">
-                <div className="w-5/12 flex flex-row flex-nowrap items-center mr-4 mb-2">
+                <div className="w-full flex flex-row flex-nowrap items-center mr-4 mb-2">
                     <FaLocationDot className="mr-2" />
                     {cours.locations[0]}
                 </div>
-                <div className="flex-1 flex flex-row flex-nowrap items-center justify-end mb-2">
+                <div className="w-full flex flex-row flex-nowrap items-center justify-start mb-2">
                     <FaCalendar className="mr-2" />
                     {formattedDate}
                 </div>

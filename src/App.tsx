@@ -32,67 +32,48 @@ function App() {
             <div className="w-full h-screen flex flex-col justify-between items-center md:bg-[#1f262e] bg-black">
                 <div className="bg-[#1f262e] w-full md:max-w-full max-w-md h-full mx-4 flex flex-col justify-between">
                     <Header />
-                    <div className="w-full h-full overflow-hidden overflow-y-auto py-4 md:px-0 px-6 md:w-6/12 md:mx-auto">
-                        <div className="w-full h-full">
-                            <div className="flex-grow">
-                                <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route
-                                        path="/coaching"
-                                        element={<Coaching />}
-                                    />
-                                    <Route
-                                        path="/planning"
-                                        element={<Planning />}
-                                    />
-                                    <Route
-                                        path="/sports"
-                                        element={<Sports />}
-                                    />
-                                    <Route
-                                        path="/profil"
-                                        element={<Profil />}
-                                    />
-                                    <Route
-                                        path="/profil-modification"
-                                        element={<UpdateProfil />}
-                                    />
-                                    <Route
-                                        path="/coach/:coachId"
-                                        element={<CoachDetail />}
-                                    />
-                                    <Route
-                                        path="/user/:id"
-                                        element={<ParticipantDetail />}
-                                    />
-                                    <Route
-                                        path="/cours/:courseId"
-                                        element={<CoursDetail />}
-                                    />
-                                    <Route
-                                        path="/cours/creation"
-                                        element={<CreationCours />}
-                                    />
-                                    <Route
-                                        path="/cours/modification/:courseId"
-                                        element={<UpdateCours />}
-                                    />
-                                    <Route
-                                        path="/connexion"
-                                        element={<Connexion />}
-                                    />
-                                    <Route
-                                        path="/inscription"
-                                        element={<Inscription />}
-                                    />
-                                    <Route
-                                        path="/sport/:id"
-                                        element={<SportDetail />}
-                                    />
-                                    <Route path="*" element={<NotFound />} />
-                                </Routes>
-                            </div>
-                        </div>
+                    <div className="flex-grow w-full overflow-hidden overflow-y-auto py-4 md:px-0 px-6 md:w-6/12 md:mx-auto">
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/coaching" element={<Coaching />} />
+                            <Route path="/planning" element={<Planning />} />
+                            <Route path="/sports" element={<Sports />} />
+                            <Route path="/profil" element={<Profil />} />
+                            <Route
+                                path="/profil-modification"
+                                element={<UpdateProfil />}
+                            />
+                            <Route
+                                path="/coach/:coachId"
+                                element={<CoachDetail />}
+                            />
+                            <Route
+                                path="/user/:id"
+                                element={<ParticipantDetail />}
+                            />
+                            <Route
+                                path="/cours/:courseId"
+                                element={<CoursDetail />}
+                            />
+                            <Route
+                                path="/cours/creation"
+                                element={<CreationCours />}
+                            />
+                            <Route
+                                path="/cours/modification/:courseId"
+                                element={<UpdateCours />}
+                            />
+                            <Route path="/connexion" element={<Connexion />} />
+                            <Route
+                                path="/inscription"
+                                element={<Inscription />}
+                            />
+                            <Route
+                                path="/sport/:id"
+                                element={<SportDetail />}
+                            />
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
                     </div>
                     <Navbar />
                     <NavbarWeb />

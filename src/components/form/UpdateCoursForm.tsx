@@ -43,6 +43,8 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
         sqlInjection?: string;
     }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dateDebutError, setDateDebutError] = useState("");
+    const [dateFinError, setDateFinError] = useState("");
 
     const { updateCourse, error } = useApiCourse();
 
@@ -61,8 +63,17 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
         );
         setDetail(course.detail?.toString() ? course.detail?.toString() : "");
         setParticipants(course.places.toString());
-        setDateDebut(new Date(course.startDate).toISOString().split("T")[0]);
-        setDateFin(new Date(course.endDate).toISOString().split("T")[0]);
+        const formatDateTimeLocal = (dateString: Date) => {
+            const localDate = new Date(dateString);
+            const year = localDate.getFullYear();
+            const month = String(localDate.getMonth() + 1).padStart(2, "0"); // Mois doit être sur 2 chiffres
+            const day = String(localDate.getDate()).padStart(2, "0"); // Jour doit être sur 2 chiffres
+            const hours = String(localDate.getHours()).padStart(2, "0"); // Heures sur 2 chiffres
+            const minutes = String(localDate.getMinutes()).padStart(2, "0"); // Minutes sur 2 chiffres
+            return `${year}-${month}-${day}T${hours}:${minutes}`; // Format YYYY-MM-DDTHH:MM
+        };
+        setDateDebut(formatDateTimeLocal(course.startDate));
+        setDateFin(formatDateTimeLocal(course.endDate));
         setLieu(course.locations[0]);
         setPrix(course.price.toString());
 
@@ -104,11 +115,16 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
         if (Object.keys(validationErrors).length === 0) {
             setIsSubmitting(true);
 
+            const localDateDebut = new Date(
+                dateDebut.replace("T", " ") + ":00"
+            ); // Ajout explicite des secondes
+            const localDateFin = new Date(dateFin.replace("T", " ") + ":00");
+
             const updatedCourse: Partial<Course> = {
                 ...course,
                 detail: detail ? detail : "",
-                startDate: new Date(dateDebut),
-                endDate: new Date(dateFin),
+                startDate: localDateDebut,
+                endDate: localDateFin,
                 places: Number(participants),
                 locations: [lieu],
                 levels: niveau ? [getKeyLevel(niveau.value)] : course.levels,
@@ -119,7 +135,7 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
             };
 
             const success = await updateCourse(
-                String(course.owner?.id) ?? undefined,
+                String(course.id) ?? undefined,
                 updatedCourse
             );
 
@@ -133,6 +149,24 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
         } else {
             setErrors(validationErrors);
         }
+    };
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const getCurrentDateTime = () => {
+        const now = new Date();
+
+        return now
+            .toLocaleString("sv-SE", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            })
+            .replace(" ", "T")
+            .slice(0, 16);
     };
 
     return (
@@ -341,17 +375,45 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
                         Date de début *
                     </label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         id="dateDebut"
                         value={dateDebut}
                         className="rounded-lg bg-[#2c3540b5] px-4 py-2 text-white"
-                        onChange={(e) => setDateDebut(e.target.value)}
+                        onChange={(e) => {
+                            const selectedDateDebut = e.target.value;
+                            const currentDateTime = getCurrentDateTime();
+
+                            if (selectedDateDebut < currentDateTime) {
+                                setDateDebut("");
+                                setDateDebutError(
+                                    "La date de début ne peut pas être antérieure à l'heure actuelle."
+                                );
+                            } else {
+                                setDateDebutError("");
+                                setDateDebut(selectedDateDebut);
+                            }
+
+                            if (dateFin && e.target.value > dateFin) {
+                                setDateFin("");
+                                setDateFinError(
+                                    "La date de fin ne peut pas être antérieure à la date de début."
+                                );
+                            } else {
+                                setDateFinError("");
+                            }
+                        }}
                         required
                         disabled={isSubmitting}
+                        min={today}
                     />{" "}
                     {errors.dateDebut && (
                         <span className="text-red-500 mt-2">
                             {errors.dateDebut}
+                        </span>
+                    )}
+                    {dateDebutError && (
+                        <span className="text-red-500 mt-2">
+                            {dateDebutError}
                         </span>
                     )}
                 </div>
@@ -360,17 +422,34 @@ const UpdateCoursForm: React.FC<UpdateCoursFormProps> = ({ course }) => {
                         Date de fin *
                     </label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         id="dateFin"
                         value={dateFin}
                         className="rounded-lg bg-[#2c3540b5] px-4 py-2 text-white"
-                        onChange={(e) => setDateFin(e.target.value)}
+                        onChange={(e) => {
+                            setDateFin(e.target.value);
+                            if (dateDebut && e.target.value < dateDebut) {
+                                setDateFin(""); // Reset dateFin si elle devient invalide
+                                setDateFinError(
+                                    "La date de fin ne peut pas être antérieure à la date de début."
+                                );
+                            } else {
+                                setDateFin(e.target.value);
+                                setDateFinError("");
+                            }
+                        }}
                         required
                         disabled={isSubmitting}
+                        min={dateDebut}
                     />{" "}
                     {errors.dateFin && (
                         <span className="text-red-500 mt-2">
                             {errors.dateFin}
+                        </span>
+                    )}
+                    {dateFinError && (
+                        <span className="text-red-500 mt-2">
+                            {dateFinError}
                         </span>
                     )}
                 </div>

@@ -24,7 +24,7 @@ const Sports: React.FC = () => {
     );
 
     return (
-        <div className="text-white flex flex-col items-center justify-center h-full">
+        <div className="text-white flex flex-col items-center justify-center">
             {/* Barre de recherche */}
             <div className="relative w-full max-w-md mt-2 mb-6">
                 <input
