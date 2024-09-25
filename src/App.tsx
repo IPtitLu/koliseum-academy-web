@@ -30,9 +30,9 @@ function App() {
     return (
         <Router>
             <div className="w-full h-screen flex flex-col justify-between items-center md:bg-[#1f262e] bg-black">
-                <div className="bg-[#1f262e] w-full md:max-w-full max-w-md h-full mx-4 flex flex-col justify-between">
+                <div className="bg-[#1f262e] w-full md:max-w-full max-w-md h-full mx-4 flex flex-col justify-between relative">
                     <Header />
-                    <div className="flex-grow w-full overflow-hidden overflow-y-auto py-4 md:px-0 px-6 md:w-6/12 md:mx-auto">
+                    <div className="flex-grow w-full overflow-hidden overflow-y-auto py-4 md:px-0 px-6 md:w-6/12 md:mx-auto mb-16">
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/coaching" element={<Coaching />} />

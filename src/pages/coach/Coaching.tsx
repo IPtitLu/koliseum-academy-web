@@ -44,10 +44,10 @@ const Coaching: React.FC = () => {
 
     return (
         <>
-            <h2 className="w-full text-left font-light pb-2 mb-6 mt-4 border-b-[0.5px] text-white">
+            <h2 className="w-full flex  text-left font-light pb-2 mb-6 mt-4 border-b-[0.5px] text-white">
                 Coachs disponibles
             </h2>
-            <div className="text-white flex items-center justify-center h-full">
+            <div className="text-white flex items-start justify-center h-full">
                 <div className="w-full flex flex-wrap justify-start">
                     {loading ? (
                         <Loader />

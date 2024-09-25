@@ -15,7 +15,7 @@ import { FaSearch } from "react-icons/fa";
 const Navbar: React.FC = () => {
     const user = useRecoilValue(userAtom);
     return (
-        <div className="bg-[#1f262e] text-white flex justify-around pb-2 pt-4 mb-2 shadow-top-lg md:hidden">
+        <div className="bg-[#1f262e] text-white flex justify-around pb-2 pt-4 mb-2 shadow-top-lg md:hidden absolute bottom-0 w-full">
             <NavLink
                 to="/"
                 className={({ isActive }) =>
