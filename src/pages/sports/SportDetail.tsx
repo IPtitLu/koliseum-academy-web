@@ -26,7 +26,7 @@ const SportDetail: React.FC = () => {
         return <div>Aucun détail trouvé pour le sport avec l'ID: {id}</div>;
     }
     return (
-        <div className="text-white flex flex-col items-center justify-center h-full">
+        <div className="text-white flex flex-col items-center h-full">
             <div
                 onClick={() => navigate(-1)}
                 className="hover:text-red-500 w-full text-left text-2xl mb-4 cursor-pointer"
